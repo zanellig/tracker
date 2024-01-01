@@ -43,5 +43,13 @@ CREATE TABLE goals (
     end_date TIMESTAMP NOT NULL,
     repeats BOOLEAN NOT NULL DEFAULT false,
     days_a_week SMALLINT DEFAULT 7,
-    repeat_on_days TEXT []
+    repeat_on_days VARCHAR(10) [] DEFAULT [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday'
+    ]
 );
