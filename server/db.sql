@@ -28,8 +28,20 @@ CREATE TABLE todos (
     is_recurring BOOLEAN NOT NULL DEFAULT false,
     happens_again BOOLEAN NOT NULL DEFAULT false,
     repeats_every TEXT DEFAULT null,
-    repeats_until TIMESTAMPS DEFAULT infinity,
+    repeats_until TIMESTAMP DEFAULT infinity,
     has_exceptions BOOLEAN NOT NULL DEFAULT false,
     exception_intervals INTERVAL [] DEFAULT null,
     exception_timestamps TIMESTAMP DEFAULT null
+);
+
+CREATE TABLE goals (
+    goal_id SMALLSERIAL UNIQUE PRIMARY KEY NOT NULL,
+    generated_by_user_id BIGSERIAL REFERENCES users (user_id) NOT NULL,
+    goal_body VARCHAR(128) NOT NULL,
+    progress_percentage NUMERIC(5, 4) NOT NULL DEFAULT 0,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    repeats BOOLEAN NOT NULL DEFAULT false,
+    days_a_week SMALLINT DEFAULT 7,
+    repeat_on_days TEXT []
 );
