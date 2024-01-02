@@ -4,9 +4,9 @@ CREATE TABLE users (
     user_name VARCHAR(64) NOT NULL,
     email VARCHAR(64) NOT NULL,
     has_accepted_terms BOOLEAN NOT NULL DEFAULT false,
-    thoughts SMALLSERIAL [],
-    todos SMALLSERIAL [],
-    goals SMALLSERIAL []
+    thoughts SMALLINT [],
+    todos SMALLINT [],
+    goals SMALLINT []
 );
 
 CREATE TABLE thoughts (
@@ -28,10 +28,11 @@ CREATE TABLE todos (
     is_recurring BOOLEAN NOT NULL DEFAULT false,
     happens_again BOOLEAN NOT NULL DEFAULT false,
     repeats_every TEXT DEFAULT null,
-    repeats_until TIMESTAMP DEFAULT infinity,
+    repeats_until TIMESTAMP DEFAULT null::TIMESTAMP,
     has_exceptions BOOLEAN NOT NULL DEFAULT false,
     exception_intervals INTERVAL [] DEFAULT null,
     exception_timestamps TIMESTAMP DEFAULT null
+    -- why do we have exception timestamps?
 );
 
 CREATE TABLE goals (
@@ -43,7 +44,7 @@ CREATE TABLE goals (
     end_date TIMESTAMP NOT NULL,
     repeats BOOLEAN NOT NULL DEFAULT false,
     days_a_week SMALLINT DEFAULT 7,
-    repeat_on_days VARCHAR(10) [] DEFAULT [
+    repeat_on_days VARCHAR(10) [] DEFAULT ARRAY[
         'monday',
         'tuesday',
         'wednesday',
