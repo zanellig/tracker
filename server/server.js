@@ -40,13 +40,13 @@ app.get('/user/:user_id/thoughts', async (req, res) => {
 });
 
 app.put('/user/:user_id/thoughts/:thought_id', async (req, res) => {
-  const response = await modifyThought(req);
+  const response = modifyThought(req);
   res.send(response);
 });
 
 // FINISH, NOT FUNCTIONAL
 app.post('/user/:user_id/thoughts', async (req, res) => {
-  const user = await getUser(req.params.user_id);
+  const user = getUser(req.params.user_id);
   if (user === 'User not found.') res.send(user);
 
   // TIMEZONE GIVING ERORRS
@@ -63,7 +63,7 @@ app.post('/user/:user_id/thoughts', async (req, res) => {
     "routine": "DateTimeParseError"
   }
   */
-  const response = await createThought(req);
+  const response = createThought(req);
   res.send(response);
 });
 
