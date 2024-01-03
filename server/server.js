@@ -10,7 +10,12 @@ const port = process.env.PORT || 3333;
 const root = __dirname;
 
 const { getUser, getUsers, createNewUser } = require('./user');
-const { getThoughts, createThought, modifyThought } = require('./thoughts');
+const {
+  getThoughts,
+  getThoughtById,
+  createThought,
+  modifyThought,
+} = require('./thoughts');
 
 app.use(cors());
 app.use(express.json());
@@ -35,36 +40,43 @@ app.post('/user', async (req, res) => {
 // Thoughts REST
 app.get('/user/:user_id/thoughts', async (req, res) => {
   const { user_id } = req.params;
-  const thoughts = getThoughts(user_id);
+  const thoughts = await getThoughts(user_id);
   res.send(thoughts);
 });
 
 app.put('/user/:user_id/thoughts/:thought_id', async (req, res) => {
-  const response = modifyThought(req);
+  const response = await modifyThought(req);
   res.send(response);
 });
 
-// FINISH, NOT FUNCTIONAL
+// Creates thought and returns it's body
 app.post('/user/:user_id/thoughts', async (req, res) => {
-  const user = getUser(req.params.user_id);
+  let user;
+  try {
+    user = await getUser(req.params.user_id);
+  } catch (e) {
+    console.error(e);
+  }
   if (user === 'User not found.') res.send(user);
 
-  // TIMEZONE GIVING ERORRS
-  /*
-  POSTMAN RETURNED THIS RESPONSE ON POST AND PUT ROUTES
-  {
-    "length": 172,
-    "name": "error",
-    "severity": "ERROR",
-    "code": "22007",
-    "where": "unnamed portal parameter $2 = '...'",
-    "file": "datetime.c",
-    "line": "4018",
-    "routine": "DateTimeParseError"
+  let thoughtResponse;
+  try {
+    thoughtResponse = await createThought(user.user_id, req.body.thought_body);
+  } catch (e) {
+    console.error(e);
   }
-  */
-  const response = createThought(req);
-  res.send(response);
+  const thoughtId = thoughtResponse.rows[0].thought_id;
+
+  let thoughtIdObject;
+  let thoughtBody;
+  try {
+    thoughtIdObject = await getThoughtById(thoughtId);
+    thoughtBody = thoughtIdObject.rows[0].thought_body;
+  } catch (e) {
+    console.error(e);
+  }
+
+  res.send(thoughtBody);
 });
 
 app.listen(port, () => {
