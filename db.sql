@@ -14,7 +14,7 @@ CREATE TABLE thoughts (
     generated_by_user_id BIGINT REFERENCES users (user_id) NOT NULL,
     thought_body VARCHAR(512) NOT NULL,
     date_generated DATE NOT NULL,
-    time_generated TIMESTAMP WITH timezone NOT NULL
+    time_generated TIMESTAMP WITH timezone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE todos (
@@ -32,7 +32,8 @@ CREATE TABLE todos (
     has_exceptions BOOLEAN NOT NULL DEFAULT false,
     exception_intervals INTERVAL [] DEFAULT null,
     exception_timestamps TIMESTAMP DEFAULT null
-    -- why do we have exception timestamps?
+    -- we have exeption timestamps to know where the user wants 
+    -- to create exceptions for his todos
 );
 
 CREATE TABLE goals (
