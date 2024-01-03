@@ -11,17 +11,41 @@ async function getThoughts(user_id) {
   return thoughts;
 }
 
-async function createThought({ params, body }) {
-  const { user_id } = params;
-  const { thought_body } = body;
-
-  return await pool
-    .query(
-      'INSERT INTO thoughts (generated_by_user_id, thought_body, date_generated, time_generated) VALUES ($1, $2, $3, $4::timestamp with time zone);',
-      [user_id, thought_body, date_generated, time_generated]
-    )
-    .catch(e => e);
+async function getThoughtById(thought_id) {
+  /* 
+  The function was getting passed a promise, 
+  solved by adding the await keyword invoking the createThought function in server.js
+  */
+  return await pool.query(
+    'SELECT thought_body FROM thoughts WHERE thought_id = $1',
+    [thought_id]
+  );
 }
+
+async function createThought(user_id, thought_body) {
+  await pool
+    .query('SELECT thought_id FROM thoughts WHERE thought_body = $1;', [
+      thought_body,
+    ])
+    .then(r => {
+      if (r.rows[0]) return 'Thoughts cannot be duplicate.';
+    });
+
+  await pool
+    .query(
+      'INSERT INTO thoughts (generated_by_user_id, thought_body, date_generated, time_generated) VALUES ($1, $2, $3, CURRENT_TIMESTAMP);',
+      [user_id, thought_body, date_generated]
+    )
+    .catch(e => {
+      if (e) console.error(e);
+    });
+
+  return await pool.query(
+    'SELECT thought_id FROM thoughts WHERE thought_body = $1;',
+    [thought_body]
+  );
+}
+// insertThoughtIdFor(user_id);
 
 async function modifyThought({ params, body }) {
   const { user_id, thought_id } = params;
@@ -35,4 +59,4 @@ async function modifyThought({ params, body }) {
     .catch(e => e);
 }
 
-module.exports = { getThoughts, createThought, modifyThought };
+module.exports = { getThoughts, getThoughtById, createThought, modifyThought };
