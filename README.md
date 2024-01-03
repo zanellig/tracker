@@ -2,7 +2,7 @@
 
 ## Goal
 
-Create an app that's interactive, with visually appealing designs, which the user is encouraged to use **daily** to track their progress, ToDo's and thoughts that they encounter during the day. The main driver for this app being that the user has a way to connect with his/her past self and become a better and more organized individual.
+Create an app that's interactive, with visually appealing designs, which the user is encouraged to use **daily** to track their progress, ToDo's and thoughts that they encounter during the day. The main driver for this app being that the user has a way to connect with their past self and become a better and more organized individual.
 
 ## The Tracker's 10 commandments
 
