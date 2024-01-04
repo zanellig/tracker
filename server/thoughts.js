@@ -23,14 +23,17 @@ async function getThoughtById(thought_id) {
 }
 
 async function createThought(user_id, thought_body) {
-  await pool
-    .query('SELECT thought_id FROM thoughts WHERE thought_body = $1;', [
-      thought_body,
-    ])
-    .then(r => {
-      if (r.rows[0]) return 'Thoughts cannot be duplicate.';
-    });
+  // We check if the thought already exists.
+  const duplicateThought = await pool.query(
+    'SELECT thought_id FROM thoughts WHERE thought_body = $1;',
+    [thought_body]
+  );
+  console.log(duplicateThought.rows[0].thought_id);
+  if (duplicateThought.rows[0].thought_id) {
+    return 'Thoughts cannot be duplicate.';
+  }
 
+  // Create the thought in db.
   await pool
     .query(
       'INSERT INTO thoughts (generated_by_user_id, thought_body, date_generated, time_generated) VALUES ($1, $2, $3, CURRENT_TIMESTAMP);',
@@ -39,11 +42,20 @@ async function createThought(user_id, thought_body) {
     .catch(e => {
       if (e) console.error(e);
     });
-
-  return await pool.query(
-    'SELECT thought_id FROM thoughts WHERE thought_body = $1;',
-    [thought_body]
-  );
+  // Return thought body created FROM the db.
+  // This query should never fail, as it depends on the query above to also not fail.
+  return await pool
+    .query('SELECT thought_id FROM thoughts WHERE thought_body = $1;', [
+      thought_body,
+    ])
+    .then(async thoughtResponse => {
+      const thought_id = thoughtResponse.rows[0].thought_id;
+      await pool.query(
+        'UPDATE users SET thoughts = array_append(thoughts, $1) WHERE user_id = $2',
+        [thought_id, user_id]
+      );
+      return thoughtResponse;
+    });
 }
 // insertThoughtIdFor(user_id);
 

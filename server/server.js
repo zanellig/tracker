@@ -51,13 +51,14 @@ app.put('/user/:user_id/thoughts/:thought_id', async (req, res) => {
 
 // Creates thought and returns it's body
 app.post('/user/:user_id/thoughts', async (req, res) => {
+  // I want to simplify this part. Maybe extract the try/catch blocks to a separate function.
   let user;
   try {
     user = await getUser(req.params.user_id);
   } catch (e) {
     console.error(e);
   }
-  if (user === 'User not found.') res.send(user);
+  if (typeof user === 'string') res.send(user);
 
   let thoughtResponse;
   try {
@@ -65,6 +66,8 @@ app.post('/user/:user_id/thoughts', async (req, res) => {
   } catch (e) {
     console.error(e);
   }
+  if (typeof thoughtResponse === 'string') res.send(thoughtResponse);
+
   const thoughtId = thoughtResponse.rows[0].thought_id;
 
   let thoughtIdObject;
