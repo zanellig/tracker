@@ -4,15 +4,15 @@ CREATE TABLE users (
     user_name VARCHAR(64) NOT NULL UNIQUE,
     email VARCHAR(64) NOT NULL,
     has_accepted_terms BOOLEAN NOT NULL DEFAULT false,
-    thoughts SMALLINT [],
-    todos SMALLINT [],
-    goals SMALLINT []
+    thoughts SMALLINT [] DEFAULT ARRAY[]::SMALLINT [],
+    todos SMALLINT [] DEFAULT ARRAY[]::SMALLINT [],
+    goals SMALLINT [] DEFAULT ARRAY[]::SMALLINT []
 );
 
 CREATE TABLE thoughts (
     thought_id SMALLSERIAL UNIQUE PRIMARY KEY NOT NULL,
     generated_by_user_id BIGINT REFERENCES users (user_id) NOT NULL,
-    thought_body VARCHAR(512) NOT NULL,
+    thought_body VARCHAR(512) NOT NULL UNIQUE,
     date_generated DATE NOT NULL,
     time_generated TIMESTAMP WITH timezone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -57,3 +57,9 @@ CREATE TABLE goals (
 );
 
 SET timezone = 'UTC';
+
+-- commands run to alter local db
+-- ALTER TABLE thoughts 
+-- ADD CONSTRAINT unique_thought_body UNIQUE (thought_body);
+-- this resets the thoughts array
+-- UPDATE users SET thoughts = ARRAY[]::SMALLINT[]; 
