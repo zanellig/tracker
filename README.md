@@ -63,3 +63,7 @@ For that reason, we decided that we will **NOT** handle any authentication data,
 We also don't ask for a gender, because throughout the app, the user will never be referred to indirectly, erasing the necessity of using him/his/her/hers pronouns.
 
 ## Structure
+
+## Notes for later development
+- I would like to convert all snake_case to camelCase or viceversa. I prefer snake_case as I find it's more readable.
+
