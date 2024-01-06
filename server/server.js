@@ -9,11 +9,17 @@ const app = express();
 const port = process.env.PORT || 3333;
 const root = __dirname;
 
-const { getUser, getUsers, createNewUser } = require('./user');
 const {
+  getUser,
+  getUsers,
+  getUserByUsername,
+  createNewUser,
+} = require('./user');
+const {
+  createThought,
+  deleteThoughtById,
   getThoughts,
   getThoughtById,
-  createThought,
   modifyThought,
 } = require('./thoughts');
 
@@ -27,14 +33,23 @@ app.get('/user/:user_id', async (req, res) => {
   res.send(user);
 });
 
+// THIS ROUTE IS ONLY FOR TESTING PURPOSES
+app.get('/users', async (req, res) => {
+  const { user_name } = req.body;
+  const response = await getUserByUsername(user_name);
+  console.log(response);
+  res.send(response);
+});
+
 app.get('/user', async (req, res) => {
   const users = await getUsers();
   res.send(users);
 });
 
 app.post('/user', async (req, res) => {
-  const response = await createNewUser(req);
-  res.send(response);
+  const response = await createNewUser(req.body);
+  if (typeof response === 'string') res.send(response);
+  res.send(response.rows[0].user_id);
 });
 
 // Thoughts REST
@@ -66,7 +81,8 @@ app.post('/user/:user_id/thoughts', async (req, res) => {
   } catch (e) {
     console.error(e);
   }
-  if (typeof thoughtResponse === 'string') res.send(thoughtResponse);
+  if (!thoughtResponse || typeof thoughtResponse === 'string')
+    res.send(thoughtResponse);
 
   const thoughtId = thoughtResponse.rows[0].thought_id;
 
@@ -80,6 +96,15 @@ app.post('/user/:user_id/thoughts', async (req, res) => {
   }
 
   res.send(thoughtBody);
+});
+
+app.delete('/user/:user_id/thoughts/:thought_id', async (req, res) => {
+  let response;
+  try {
+    response = await deleteThoughtById(req.params);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 app.listen(port, () => {
